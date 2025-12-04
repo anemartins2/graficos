@@ -1,0 +1,125 @@
+#%%
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+#%%
+# Define o caminho do arquivo CSV manualmente
+caminho_arquivo_sinal1 = r'C:\Users\adriane.alves\OneDrive - Sistema FIEB\Área de Trabalho\codigos\TREINO_FELIPE\treino_fel\t2\16out\ch1_wave_000_001.csv'
+caminho_arquivo_sinal2 = r'C:\Users\adriane.alves\OneDrive - Sistema FIEB\Área de Trabalho\codigos\TREINO_FELIPE\treino_fel\t2\16out\ch2_wave_000_000.csv'
+caminho_arquivo_ruido_elet1 = r'C:\Users\adriane.alves\OneDrive - Sistema FIEB\Área de Trabalho\codigos\TREINO_FELIPE\treino_fel\t2\16out\ruido_elet_ch1_000.csv'
+caminho_arquivo_ruido_elet2 = r'C:\Users\adriane.alves\OneDrive - Sistema FIEB\Área de Trabalho\codigos\TREINO_FELIPE\treino_fel\t2\16out\ruido_elet_ch2_000.csv'
+caminho_arquivo_shotnoise1 = r'C:\Users\adriane.alves\OneDrive - Sistema FIEB\Área de Trabalho\codigos\TREINO_FELIPE\treino_fel\t2\16out\shot_noise_ch1_000.csv'
+caminho_arquivo_shotnoise2 = r'C:\Users\adriane.alves\OneDrive - Sistema FIEB\Área de Trabalho\codigos\TREINO_FELIPE\treino_fel\t2\16out\shot_noise_ch2_000.csv'
+
+# Lê o arquivo CSV
+df = pd.read_csv(caminho_arquivo_sinal1, skiprows=2)
+df2 = pd.read_csv(caminho_arquivo_sinal2, skiprows=2)
+df3 = pd.read_csv(caminho_arquivo_ruido_elet1, skiprows=2)
+df4 = pd.read_csv(caminho_arquivo_ruido_elet2, skiprows=2)
+df5 = pd.read_csv(caminho_arquivo_shotnoise1, skiprows=2)
+df6 = pd.read_csv(caminho_arquivo_shotnoise2, skiprows=2)
+
+#%%
+# Cria o gráfico
+plt.figure(figsize=(14, 8))
+time = df.iloc[:, 0]
+pot = df.iloc[:, 1]
+
+time2 = df2.iloc[:, 0]
+pot2 = df2.iloc[:, 1]
+
+timer = df3.iloc[:, 0]
+potr = df3.iloc[:, 1]
+timer2 = df4.iloc[:, 0]
+potr2 = df4.iloc[:, 1]
+
+
+times = df5.iloc[:, 0]
+pots = df5.iloc[:, 1]
+times2 = df6.iloc[:, 0]
+pots2 = df6.iloc[:, 1]
+
+#%%
+# Tamanho do bloco
+total_pontos_ch1 = len(pot)
+total_de_pontos_ch3 = len(pot2)
+
+tamanho_bloco = 10000
+num_blocos = total_pontos_ch1 // tamanho_bloco
+
+print(f"Total de pontos ch1: {total_pontos_ch1}")
+print(f"Total de pontos ch3: {total_de_pontos_ch3}")
+print(f"Número de blocos: {num_blocos}")
+
+#%% 
+# Listas para armazenar resultados
+medias_blocos = []
+desvios_blocos = []
+tempos_centro_blocos = []
+ 
+# Calcula média e desvio padrão para cada bloco
+for i in range(num_blocos):
+    inicio = i * tamanho_bloco
+    fim = (i + 1) * tamanho_bloco
+   
+    # Extrai o bloco atual
+    bloco_pot = pot[inicio:fim]
+    bloco_time = time[inicio:fim]
+   
+    # Calcula estatísticas do bloco
+    media_bloco = np.mean(bloco_pot)
+    desvio_bloco = np.std(bloco_pot)
+   
+    # Armazena resultados
+    medias_blocos.append(media_bloco)
+    desvios_blocos.append(desvio_bloco)
+
+#%%
+# PRIMEIRO GRÁFICO - apenas pontos originais
+plt.figure(figsize=(14, 8))  # Cria uma NOVA figura
+plt.plot(time, pot, 'bo', markersize=2, alpha=0.3, label='Pontos originais')
+plt.xlabel('Tempo', fontsize=14)
+plt.tick_params(labelsize=12, rotation=0)
+plt.ylabel('Tensão', fontsize=14)
+plt.grid(True, alpha=0.3)
+plt.legend(fontsize=10)
+plt.title('Pontos Originais - Sinal 1', fontsize=14)
+plt.show()
+
+#%%
+# SEGUNDO GRÁFICO - com desvio padrão
+plt.figure(figsize=(14, 8))  # Cria OUTRA figura nova
+
+# Plota os pontos originais primeiro
+plt.plot(time, pot, 'bo', markersize=2, alpha=0.3, label='Pontos originais')
+
+# Plota as faixas de desvio padrão para cada bloco
+for i in range(num_blocos):
+    inicio = i * tamanho_bloco
+    fim = (i + 1) * tamanho_bloco
+   
+    # CORREÇÃO: fill_between precisa de dois valores y
+    plt.fill_between(time[inicio:fim], 
+                     medias_blocos[i] - desvios_blocos[i],
+                     medias_blocos[i] + desvios_blocos[i],
+                     alpha=0.2, color='orange', label='Faixa desvio' if i == 0 else "")
+   
+    # Linhas dos limites de desvio padrão
+    plt.hlines(y=medias_blocos[i] - desvios_blocos[i],
+               xmin=time[inicio], xmax=time[fim-1],
+               color='orange', linestyle='solid', linewidth=1, alpha=0.7)
+    plt.hlines(y=medias_blocos[i] + desvios_blocos[i],
+               xmin=time[inicio], xmax=time[fim-1],
+               color='orange', linestyle='solid', linewidth=1, alpha=0.7)
+    plt.axvline(x=time[inicio], color='red', linestyle='--', linewidth=1, alpha=0.7)
+ 
+plt.xlabel('Tempo', fontsize=14)
+plt.tick_params(labelsize=12, rotation=0)
+plt.ylabel('Tensão', fontsize=14)
+plt.grid(True, alpha=0.3)
+plt.legend(fontsize=10)
+plt.title(f'Desvio Padrão por Blocos de {tamanho_bloco} pontos', fontsize=14)
+ 
+plt.show()
+# %%

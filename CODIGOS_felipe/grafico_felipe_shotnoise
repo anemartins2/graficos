@@ -1,0 +1,52 @@
+import matplotlib.pyplot as plt
+import numpy as np
+ 
+# Listas fornecidas
+ 
+#Poptica = [12.81, 6.03, 3.03, 1.52, 0.99, 0.47, 0.12]
+#Peletrica = [-65.97, -68.53, -70.58, -72.10, -72.73, -73.56, -74.31] #500MHz - dia 14/10 - Thorlabs2
+#Peletrica = [-66.76, -69.05, -70.95, -71.90, -72.47, -73.25, -73.79] #700MHz - dia 14/10 - Thorlabs2
+ 
+#Poptica = np.array([12.85, 6.03, 3.03, 1.52, 1.06, 0.5, 0])
+#Peletrica = np.array([-73.85, -76.21, -78.49, -80.21, -80.92, -81.77, -83.33]) #500MHz - dia 14/10 - Wiserlabs
+#Peletrica = [-73.50, -76.28, -78.29, -80.02, -80.61, -81.58, -82.66] #700MHz - dia 14/10 - Wiserlabs
+ 
+ 
+Poptica2 = np.array([12.72, 6.01, 3.03, 1.52, 1.03, 0.502, 0.221, 0])
+Peletrica2 = np.array([-66.570, -68.509, -70.736, -72.413, -72.797, -74.147, -74.805, -75.165]) #500MHz - dia 14/10 - Thorlabs
+#Peletrica2 = [-66.31, -69.408, -71.179, -72.100, -73.022, -73.686, -74.157, -74.147] #700MHz - dia 14/10 - Thorlabs
+ 
+ 
+#Poptica = [12.87, 6.06, 3.06, 2.51, 0.68, 0.31, 0.050] dia 13/10
+#Peletrica = [-78.76, -81.50, -83.33, -83.35, -87.509, -87.506, -88.41]  #500MHz - Thorlabs
+#Peletrica = [-79.39, -81.00, -84.21, -84.64, -85.26, -86.35, -86.79] #700MHz - Thorlabs
+ 
+Poptica = np.array([10.2, 5, 2.01, 0.51, 0.1, 0]) #Wiserlabs
+Peletrica = np.array([-86.3, -89.3, -92.5, -96.3, -98.3, -99.2]) #Wiserlabs
+ 
+#shotnoise clearance, a diferença entre o shot noise e o ruido eletronico
+#fazer as mesmas medidas automatizadas
+#calibração de shotnoise
+ 
+# Converter a primeira lista (valoresy2) para dBm
+#valores_mw = 10 **(np.array(Peletrica)/10)
+#valores_mw2 = 10 **(np.array(Peletrica2)/10)
+ 
+ 
+# Plotar gráfico
+plt.figure(figsize=(10, 6))
+#plt.plot(Poptica, valores_mw, 'o-', color='blue', label='Potência medida ThorLabs (convertida para dBm)')
+#plt.plot(Poptica2, valores_mw2, 'o-', color='red', label='Potência medida Wieserlabs (convertida para dBm)')
+ 
+plt.plot(Poptica, Peletrica - Peletrica[-1], 'o-', color='blue', label='Potência medida Wiser (convertida para dBm)')
+plt.plot(Poptica2, Peletrica2 - Peletrica2[-1], 'o-', color='red', label='Potência medida Thor (convertida para dBm)')
+ 
+#plt.title('Potência medida em função da Atenuação', fontsize=14)
+ 
+plt.xlabel('Potência óptica (mW)', fontsize=12)
+plt.ylabel('Potência elétrica (mW)', fontsize=12)
+#plt.yscale('log')
+plt.grid(True, alpha=0.3)
+plt.legend()
+plt.tight_layout()
+plt.show()

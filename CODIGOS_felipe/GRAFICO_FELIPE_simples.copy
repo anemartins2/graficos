@@ -1,0 +1,31 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+ 
+# Define o caminho do arquivo CSV manualmente
+caminho_arquivo = r'C:\Users\adriane.alves\OneDrive - Sistema FIEB\Área de Trabalho\codigos\TREINO_FELIPE\treino_fel\t2\ruido1_ch1_sinal_001.csv'
+caminho_arquivo2 = r'C:\Users\adriane.alves\OneDrive - Sistema FIEB\Área de Trabalho\codigos\TREINO_FELIPE\treino_fel\t2\ruido1_ch3_lo_000.csv'
+
+# Lê o arquivo CSV
+df = pd.read_csv(caminho_arquivo, skiprows=2)
+df2 = pd.read_csv(caminho_arquivo2, skiprows=2)
+ 
+# Cria o gráfico
+plt.figure(figsize=(14, 8))
+time = df.iloc[:, 0]
+pot = df.iloc[:, 1]
+time2 = df2.iloc[:, 0]
+pot2 = df2.iloc[:, 1]
+
+
+# Plota os pontos originais
+plt.plot(time, pot, 'bo', markersize=2, alpha=0.3, label='Pontos originais')
+
+plt.xlabel('Tempo', fontsize=14)
+plt.tick_params(labelsize=12, rotation=0)
+plt.ylabel('Tensão', fontsize=14)
+plt.grid(True, alpha=0.3)
+plt.legend(fontsize=10)
+
+ 
+plt.show()
