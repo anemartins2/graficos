@@ -1,0 +1,36 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Lê o arquivo da tabela (ajuste o nome do arquivo e formato)
+df = pd.read_excel('C:\\Users\\adriane.alves\\OneDrive - Sistema FIEB\\Área de Trabalho\\codigos\\revisão_sistematica\\TABELA_2_rrq.xlsx')  # ou .xlsx, .tsv, etc
+
+# Nome da coluna que você quer analisar
+numero_coluna = 2
+coluna = df.columns[numero_coluna]
+dados_coluna = df[coluna].dropna()
+#dados_coluna = dados_coluna.str.lower().str.strip()
+# Conta a frequência de cada valor
+contagem = dados_coluna.value_counts()
+
+# Calcula as porcentagens
+porcentagens = (contagem / len(dados_coluna)) * 100
+
+# ORDENA por ano (crescente) antes de formatar os labels
+porcentagens = porcentagens.sort_index()
+labels_formatados = [str(int(label)) for label in porcentagens.index]
+
+# Cria o gráfico de BARRAS
+plt.figure(figsize=(10, 8))
+bars = plt.bar(labels_formatados, porcentagens, color=["#728DA0", "#587690","#657C9F", "#4B698A", "#5D6684", "#4C5484", "#3A4864", "#0066FF", "#274390", "#708FCA", "#507899", '#87CEEB'])
+
+# ADICIONA os valores de porcentagem acima das barras
+for bar, porcentagem in zip(bars, porcentagens):
+    plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.5, 
+             f'{porcentagem:.1f}%', ha='center', va='bottom', fontsize=9)
+
+plt.title(f'Distribuição de Anos')
+plt.xlabel('Ano')  # Adiciona label do eixo X
+plt.ylabel('Porcentagem (%)')  # Adiciona label do eixo Y
+
+# Mostra o gráfico
+plt.show()

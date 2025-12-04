@@ -1,0 +1,68 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Lê o arquivo da tabela
+df = pd.read_excel('C:\\Users\\adriane.alves\\OneDrive - Sistema FIEB\\Área de Trabalho\\codigos\\revisão_sistematica\\TABELA_2_rrq.xlsx')
+
+# Define as categorias agrupadas
+#o nome da categoria é chamada de chave e a lista de nomes de valores 
+categorias = {
+    'Machine Learning': ['machine learning', 'ml', 'aprendizado de máquina', 'deep learning'],
+    'Polarization': ['polarization'],
+    #'Integration': ['coexisting', 'classical', 'telecomunication', 'hybrid'],
+    'LLO': ['local local oscilator', 'local oscilator', 'local'],
+    'Dispersion': ['noise', 'fault', 'imperfection', 'dispersion', 'turbulence'], 
+    'Modulation': ['modulation', 'module', 'modulated', 'modulations']
+}
+
+# Define palavras isoladas
+palavras_isoladas = [ 'Phase', 'Gaussian', 'Multiplexing', 'Network']
+
+# Nome da coluna com os títulos
+numero_coluna = 1
+coluna = df.columns[numero_coluna]
+#define a coluna e depois seleciona para pegar os dados apenas dessa coluna 
+dados_coluna = df[coluna].dropna().str.lower()
+#o dropna() tira linhas vazias, para fazer o mesmo com colunas você deveria definir .dropna(axis='columns'), ou seja o dropna seria um comando
+#de dropar alguma coisa, quando nada escrito dropa automaticamente linhas e quando definido dropa o que você definiu 
+
+# Conta as categorias agrupadas
+contagem = {}
+for categoria, palavras in categorias.items():
+    #para cada categoria pega as palavras que compoe essa categoria ( Executa o código do loop com esses valores)
+    #for CHAVE, VALOR in DICIONARIO.items(): itens é o método que faz o dicionario ter pares, o loop ter mais de uma palavra 
+    #  Cria uma máscara que detecta QUALQUER uma das palavras
+    mascara = pd.Series(False, index=dados_coluna.index)
+    #cria uma lista que só tem falses, isso por que é como se fosse uma lista de presença vazia onde os alunos ainda não chegaram 
+    #aplica a mascara na tabela do exel
+    for palavra in palavras:
+        #aplique a mascara false atual ou se achar alguma palavra do titulos contem o valor palavras marca como true
+        #case=False → Ignora maiúsculas/minúsculas, na=False → Ignora artigos vazios
+        mascara = mascara | dados_coluna.str.contains(palavra, case=False, na=False)
+        #define a nova mascara 
+    contagem[categoria] = mascara.sum()
+#depois de fazer esse loop com todas as palavras faz a contagem de quantas palavras foram achadas nessa categoria especifica, e faz isso para todas as categorias 
+#a mascara é necessária por que são mais de uma palavra então a contagem  tem que ser mais de uma por categoria 
+
+
+# Conta as palavras isoladas
+for palavra in palavras_isoladas:
+    contagem[palavra] = dados_coluna.str.contains(palavra, case=False, na=False).sum()
+# como não tem categorias é mais simples, é só contar quantas vezes a palavra apareceu em todos os titulos 
+# Converte para Series do pandas cada uma dos valores encontrados 
+contagem_series = pd.Series(contagem)
+
+# Calcula as porcentagens
+porcentagens = (contagem_series / len(dados_coluna)) * 100
+
+# Formata os labels
+#labels_formatados = [str(label).title() for label in porcentagens.index]
+
+# Cria o gráfico de pizza
+plt.figure(figsize=(10, 8))
+plt.pie(porcentagens, labels=porcentagens.index, textprops={'fontsize': 9}, autopct='%1.0f%%', colors=["#728DA0", "#587690","#657C9F", "#4B698A", "#5D6684", "#4C5484", "#3A4864", "#0066FF", "#274390", "#708FCA", "#507899", '#87CEEB'])
+#plt.title('Palavras de Interesse')
+plt.axis('equal')
+
+# Mostra o gráfico
+plt.show()

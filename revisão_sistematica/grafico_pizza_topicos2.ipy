@@ -1,0 +1,38 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Lê o arquivo da tabela
+df = pd.read_excel('C:\\Users\\adriane.alves\\OneDrive - Sistema FIEB\\Área de Trabalho\\codigos\\revisão_sistematica\\TABELA_2_rrq.xlsx')
+
+# Define as categorias agrupadas
+categorias = {
+    'Free-Space': ['free-space', 'free'],
+    'Fiber': ['fiber'],
+    'Integration': ['coexisting', 'classical', 'telecomunication', 'hybrid'],
+}
+
+# Nome da coluna com os títulos
+numero_coluna = 1
+coluna = df.columns[numero_coluna]
+dados_coluna = df[coluna].dropna().str.lower()
+
+# Conta as categorias - CADA TÍTULO CONTA UMA VEZ POR CATEGORIA
+contagem = {}
+for categoria, palavras in categorias.items():
+    # Cria uma máscara que detecta QUALQUER uma das palavras
+    mascara = pd.Series(False, index=dados_coluna.index)
+    for palavra in palavras:
+        mascara = mascara | dados_coluna.str.contains(palavra, case=False, na=False)
+    contagem[categoria] = mascara.sum()
+
+# Converte para Series do pandas
+contagem_series = pd.Series(contagem)
+
+# Calcula as porcentagens
+porcentagens = (contagem_series / len(dados_coluna)) * 100
+
+# Cria o gráfico de pizza
+plt.figure(figsize=(10, 8))
+plt.pie(porcentagens, labels=porcentagens.index, textprops={'fontsize': 12}, autopct='%1.0f%%', colors=["#4C5484", "#3A4864", "#0066FF", "#274390", "#708FCA", "#507899", '#87CEEB'])
+plt.axis('equal')
+plt.show()

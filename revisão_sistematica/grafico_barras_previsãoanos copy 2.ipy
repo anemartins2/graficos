@@ -1,0 +1,60 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Lê o arquivo da tabela (ajuste o nome do arquivo e formato)
+df = pd.read_excel('C:\\Users\\adriane.alves\\OneDrive - Sistema FIEB\\Área de Trabalho\\codigos\\revisão_sistematica\\TABELA_2_rrq.xlsx')  # ou .xlsx, .tsv, etc
+
+# Nome da coluna que você quer analisar
+numero_coluna = 2
+coluna = df.columns[numero_coluna]
+dados_coluna = df[coluna].dropna()
+dados_coluna_previsao = [18.10, 20.90, 24.42, 27.72, 32.80]
+dados_coluna_anos_previsao = [2026,2027,2028,2029,2030]
+#dados_coluna = dados_coluna.str.lower().str.strip()
+# Conta a frequência de cada valor
+contagem = dados_coluna.value_counts().sort_index()
+
+# Calcula as porcentagens
+porcentagens = (contagem / len(dados_coluna)) * 100
+
+# Converte os anos originais (que podem ter .0) para inteiros
+anos_originais = [int(ano) for ano in contagem.index]
+
+# Cria listas combinadas com anos como inteiros
+todos_anos = anos_originais + dados_coluna_anos_previsao
+todas_porcentagens = list(porcentagens.values) + dados_coluna_previsao
+
+# Cria o gráfico de BARRAS
+plt.figure(figsize=(10, 8))
+bars = plt.bar([str(ano) for ano in todos_anos], todas_porcentagens, color=["#728DA0", "#587690","#657C9F", "#4B698A","#82B8E7","#19344B", "#5D6684", "#4C5484", "#3A4864", "#0066FF", "#274390", "#0049D1", "#708FCA", "#507899", '#87CEEB', "#ACACAC","#ACACAC","#ACACAC","#ACACAC","#ACACAC"])
+
+# ADICIONA os valores de porcentagem acima das barras
+for bar, porcentagem in zip(bars, todas_porcentagens):
+    plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.5, 
+             f'{porcentagem:.1f}%', ha='center', va='bottom', fontsize=9)
+
+# ADICIONA LINHA DE TENDÊNCIA EXPONENCIAL (parte nova)
+# Converte anos para números (0, 1, 2, ...) para melhor ajuste
+x_numeros = np.arange(len(todos_anos))
+y_valores = np.array(todas_porcentagens)
+
+# Ajusta uma curva exponencial (y = a * e^(b*x))
+# Usamos log para linearizar: ln(y) = ln(a) + b*x
+coefs = np.polyfit(x_numeros, np.log(y_valores), 1)  # Ajuste linear no log
+a = np.exp(coefs[1])  # a = e^(intercept)
+b = coefs[0]          # b = slope
+
+# Calcula os valores da curva exponencial
+x_suave = np.linspace(0, len(todos_anos)-1, 100)
+y_tendencia = a * np.exp(b * x_suave)
+
+# Plota a linha de tendência
+plt.plot(x_suave, y_tendencia, 'r--', linewidth=2, label=f'Tendência exponencial')
+
+plt.title(f'Distribuição de Anos')
+plt.xlabel('Ano')  # Adiciona label do eixo X
+plt.ylabel('Porcentagem (%)')  # Adiciona label do eixo Y
+
+# Mostra o gráfico
+plt.show()

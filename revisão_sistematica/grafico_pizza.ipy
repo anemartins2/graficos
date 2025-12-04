@@ -1,0 +1,27 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Lê o arquivo da tabela (ajuste o nome do arquivo e formato)
+df = pd.read_excel('C:\\Users\\adriane.alves\\OneDrive - Sistema FIEB\\Área de Trabalho\\codigos\\revisão_sistematica\\TABELA_2_rrq.xlsx')  # ou .xlsx, .tsv, etc
+
+# Nome da coluna que você quer analisar
+numero_coluna = 2
+coluna = df.columns[numero_coluna]
+dados_coluna = df[coluna].dropna()
+#dados_coluna = dados_coluna.str.lower().str.strip()
+# Conta a frequência de cada valor
+contagem = dados_coluna.value_counts()
+
+# Calcula as porcentagens
+porcentagens = (contagem / len(dados_coluna)) * 100
+#labels_formatados = [str(label).title() for label in porcentagens.index]
+labels_formatados = [str(int(label)) for label in porcentagens.index]
+
+# Cria o gráfico de pizza
+plt.figure(figsize=(10, 8))
+plt.pie(porcentagens, labels=labels_formatados, textprops={'fontsize': 9}, autopct='%1.0f%%', colors=["#728DA0", "#587690","#657C9F", "#4B698A", "#5D6684", "#4C5484", "#3A4864", "#0066FF", "#274390", "#708FCA", "#507899", '#87CEEB'])
+plt.title(f'Distribuição de Anos')
+plt.axis('equal')  # Para garantir que o gráfico fique circular
+
+# Mostra o gráfico
+plt.show()
