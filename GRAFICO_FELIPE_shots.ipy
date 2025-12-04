@@ -1,0 +1,198 @@
+#%%
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+#%%
+# Define o caminho do arquivo CSV manualmente
+caminho_arquivo_sinal1 = r'C:\Users\adriane.alves\OneDrive - Sistema FIEB\Área de Trabalho\codigos\TREINO_FELIPE\treino_fel\t2\16out\ch1_wave_000_001.csv'
+caminho_arquivo_sinal2 = r'C:\Users\adriane.alves\OneDrive - Sistema FIEB\Área de Trabalho\codigos\TREINO_FELIPE\treino_fel\t2\16out\ch2_wave_000_000.csv'
+caminho_arquivo_ruido_elet1 = r'C:\Users\adriane.alves\OneDrive - Sistema FIEB\Área de Trabalho\codigos\TREINO_FELIPE\treino_fel\t2\16out\ruido_elet_ch1_000.csv'
+caminho_arquivo_ruido_elet2 = r'C:\Users\adriane.alves\OneDrive - Sistema FIEB\Área de Trabalho\codigos\TREINO_FELIPE\treino_fel\t2\16out\ruido_elet_ch2_000.csv'
+caminho_arquivo_shotnoise1 = r'C:\Users\adriane.alves\OneDrive - Sistema FIEB\Área de Trabalho\codigos\TREINO_FELIPE\treino_fel\t2\16out\shot_noise_ch1_000.csv'
+caminho_arquivo_shotnoise2 = r'C:\Users\adriane.alves\OneDrive - Sistema FIEB\Área de Trabalho\codigos\TREINO_FELIPE\treino_fel\t2\16out\shot_noise_ch2_000.csv'
+caminho_arquivo_referencia = r'C:\Users\adriane.alves\OneDrive - Sistema FIEB\Área de Trabalho\codigos\TREINO_FELIPE\treino_fel\t2\16out\ch3_ref_wave_000_000.csv'
+
+# Lê o arquivo CSV
+df = pd.read_csv(caminho_arquivo_sinal1, skiprows=14)
+df2 = pd.read_csv(caminho_arquivo_sinal2, skiprows=14)
+df3 = pd.read_csv(caminho_arquivo_ruido_elet1, skiprows=14)
+df4 = pd.read_csv(caminho_arquivo_ruido_elet2, skiprows=14)
+df5 = pd.read_csv(caminho_arquivo_shotnoise1, skiprows=14)
+df6 = pd.read_csv(caminho_arquivo_shotnoise2, skiprows=14)
+df7 = pd.read_csv(caminho_arquivo_referencia, skiprows=14)
+#%%
+
+time0 = df.iloc[:, 0]
+pot0 = df.iloc[:, 1]
+
+time2 = df2.iloc[:, 0]
+pot2 = df2.iloc[:, 1]
+
+timer = df3.iloc[:, 0]
+potr = df3.iloc[:, 1]
+timer2 = df4.iloc[:, 0]
+potr2 = df4.iloc[:, 1]
+
+
+times = df5.iloc[:, 0]
+pots = df5.iloc[:, 1]
+times2 = df6.iloc[:, 0]
+pots2 = df6.iloc[:, 1]
+
+timeref = df7.iloc[:, 0]
+potref = df7.iloc[:, 1]
+
+#%%
+# Tamanho do bloco
+
+total_pontos1 = len(pots)
+total_pontos2 = len(pots2)
+
+
+#tempo = time2.iloc[-1] - time2.iloc[0]
+#periodo = tempo/total_de_pontos_ch3
+
+tamanho_bloco = 10000
+#tamanho_bloco2 = periodo
+
+#num_blocos =  
+num_blocos = total_pontos1 // tamanho_bloco
+num_blocos2 = total_pontos2 // tamanho_bloco
+
+
+#%% 
+# Listas para armazenar resultados
+medias_blocos = []
+desvios_blocos = []
+tempos_centro_blocos = []
+medias_blocos2 = []
+desvios_blocos2 = []
+tempos_centro_blocos2 = []
+ 
+# Calcula média e desvio padrão para cada bloco
+for i in range(num_blocos):
+    inicio = i * tamanho_bloco
+    fim = (i + 1) * tamanho_bloco
+   
+    # Extrai o bloco atual
+    bloco_pot = pots[inicio:fim]
+    bloco_time = times[inicio:fim]
+
+    # Extrai o bloco atual
+    bloco_pot2 = pots2[inicio:fim]
+    bloco_time2 = times2[inicio:fim]
+   
+    # Calcula estatísticas do bloco
+    media_bloco = np.mean(bloco_pot)
+    desvio_bloco = np.std(bloco_pot)
+
+    media_bloco2 = np.mean(bloco_pot2)
+    desvio_bloco2 = np.std(bloco_pot2)
+    #tempo_centro = np.mean(bloco_time)
+   
+    # Armazena resultados
+    medias_blocos.append(media_bloco)
+    desvios_blocos.append(desvio_bloco)
+    medias_blocos2.append(media_bloco2)
+    desvios_blocos2.append(desvio_bloco2)
+    #tempos_centro_blocos.append(tempo_centro)
+
+#%%# Plota 2 sinais em grid 1x2 (lado a lado)
+plt.figure(figsize=(16, 6))  # Figura mais larga e menos alta
+
+# Primeiro gráfico - posição (1,1)
+plt.subplot(1, 2, 1)  # 1 linha, 2 colunas, posição 1
+plt.plot(times, pots, 'bo', markersize=2, alpha=0.3, label='Sinal 1')
+plt.xlabel('Tempo')
+plt.ylabel('Tensão')
+plt.title ('')
+plt.grid(True, alpha=0.3)
+plt.legend()
+
+# Segundo gráfico - posição (1,2)
+plt.subplot(1, 2, 2)  # 1 linha, 2 colunas, posição 2
+plt.plot(times2, pots2, 'ro', markersize=2, alpha=0.3, label='Sinal 2')
+plt.xlabel('Tempo')
+plt.ylabel('Tensão')
+plt.grid(True, alpha=0.3)
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+#%%
+# Plota os dois gráficos com desvios padrão lado a lado
+plt.figure(figsize=(16, 6))  # Figura mais larga
+
+# Primeiro gráfico - posição (1,1)
+plt.subplot(1, 2, 1)
+plt.plot(times, pots, 'bo', markersize=2, alpha=0.3, label='Pontos originais')
+
+# Plota as faixas de desvio padrão para cada bloco - PRIMEIRO GRÁFICO
+for i in range(num_blocos):
+    inicio = i * tamanho_bloco
+    fim = (i + 1) * tamanho_bloco
+   
+    # Desenha a faixa de desvio padrão para cada bloco
+    plt.fill_between(times[inicio:fim], desvios_blocos[i],
+                     alpha=0.2, color='orange')
+   
+    # Linhas dos limites de desvio padrão
+    plt.hlines(y=desvios_blocos[i],
+               xmin=times[inicio], xmax=times[fim-1],
+               color='orange', linestyle='solid', linewidth=1, alpha=0.7)
+    plt.axvline(x=times[inicio], color='red', linestyle='--', linewidth=1, alpha=0.7)
+ 
+plt.xlabel('Tempo (s) ', fontsize=14)
+plt.tick_params(labelsize=12, rotation=0)
+plt.ylabel('Tensão (V)', fontsize=14)
+plt.grid(True, alpha=0.3)
+plt.legend(fontsize=10)
+plt.title(f'Ruído Elet 1 - Blocos de {tamanho_bloco} pontos', fontsize=14)
+
+# Segundo gráfico - posição (1,2)
+plt.subplot(1, 2, 2)
+plt.plot(times2, pots2, 'bo', markersize=2, alpha=0.3, label='Pontos originais')
+ 
+# Plota as faixas de desvio padrão para cada bloco - SEGUNDO GRÁFICO
+for i in range(num_blocos2):
+    inicio = i * tamanho_bloco
+    fim = (i + 1) * tamanho_bloco
+   
+    # Desenha a faixa de desvio padrão para cada bloco
+    plt.fill_between(times2[inicio:fim], desvios_blocos2[i],
+                     alpha=0.2, color='orange')
+   
+    # Linhas dos limites de desvio padrão
+    plt.hlines(y=desvios_blocos2[i],
+               xmin=times2[inicio], xmax=times2[fim-1],
+               color='orange', linestyle='solid', linewidth=1, alpha=0.7)
+    plt.axvline(x=times2[inicio], color='red', linestyle='--', linewidth=1, alpha=0.7)
+ 
+plt.xlabel('Tempo (s) ', fontsize=14)
+plt.tick_params(labelsize=12, rotation=0)
+plt.ylabel('Tensão (V)', fontsize=14)
+plt.grid(True, alpha=0.3)
+plt.legend(fontsize=10)
+plt.title(f'Ruído Elet 2 - Blocos de {tamanho_bloco} pontos', fontsize=14)
+
+plt.tight_layout()
+plt.show()
+
+# %%
+def valoresdedesvio(desvios_blocos, desvios_blocos2):
+    
+    dv_sinal1 = np.mean(desvios_blocos)   # Média da LISTA de desvios
+    dv_sinal2 = np.mean(desvios_blocos2)  # Média da LISTA de desvios
+
+    return dv_sinal1, dv_sinal2
+
+# CHAMADA DA FUNÇÃO - você precisa chamar a função e armazenar o resultado
+media1, media2 = valoresdedesvio(desvios_blocos, desvios_blocos2)
+
+# AGORA pode usar as variáveis
+print(f"valor da media dos desvios padrões {media1}")
+print(f"valor da media dos desvios padrões {media2}")
+
+# %%
