@@ -1,0 +1,7 @@
+Isntalando o mkdocs 
+instalar as dependências 
+pip install -e . 
+>ou cada uma das que faltarem instalar como exemplo:
+pip install mkdocs-gallery
+>depois usar o comando de gerar o site 
+python -m mkdocs serve
