@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Lê o arquivo da tabela (ajuste o nome do arquivo e formato)
-df = pd.read_excel('C:\\Users\\adriane.alves\\OneDrive - Sistema FIEB\\Área de Trabalho\\codigos\\revisão_sistematica\\TABELA_2_rrq.xlsx')  # ou .xlsx, .tsv, etc
+df = pd.read_excel('')  # ou .xlsx, .tsv, etc
 
 # Nome da coluna que você quer analisar
 numero_coluna = 3
