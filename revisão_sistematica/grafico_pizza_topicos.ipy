@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Lê o arquivo da tabela
-df = pd.read_excel('C:\\Users\\adriane.alves\\OneDrive - Sistema FIEB\\Área de Trabalho\\codigos\\revisão_sistematica\\TABELA_2_rrq.xlsx')
+df = pd.read_excel('')
 
 # Define as categorias agrupadas
 #o nome da categoria é chamada de chave e a lista de nomes de valores 
